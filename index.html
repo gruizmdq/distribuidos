@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Formulario</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="css/mdb.min.css" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="css/style.css" rel="stylesheet">
+
+</head>
+<body class="fixed-sn">
+  <div class="lwrapper">
+    <div class="loader">
+    <span>{</span><span>}</span>
+    </div>
+  </div>
+  <div class="container">
+    <h2 class="mt-5 text-center">Trabajo Final Sistemas Distribuidos</h2>
+    <h6 class='mb-5 text-center'>(Host: <span id='list' style='font-weight: bold'></span>)</h6>
+    <div class="row">
+      <div class="col-md-4 offset-md-4">
+        <div style="margin: auto; text-align: center">
+          <div class="center mr-5">
+              <h5 class="text-left">IP</h5>
+              <input type="text" id="ip1" maxlength="3" class="ip-input form-control validate" data-toggle="tooltip" data-placement="bottom" title="Valor entre 0 y 255">
+              <input type="text" id="ip2" maxlength="3" class="ip-input form-control validate">
+              <input type="text" id="ip3" maxlength="3" class="ip-input form-control validate">
+              <input type="text" id="ip4" maxlength="3" class="ip-input form-control validate">
+          </div>
+          <div class="center">
+              <h5 class="text-left">Puerto</h5>
+              <input min="0" max="65535" step="1" type="number" id="puerto" class="port-input form-control validate" data-toggle="tooltip" data-placement="bottom" title="Elegir un puerto de 0 a 65.535">
+          </div>
+        </div>
+        <div class="row">
+          <div class="text-center" style="margin: auto">
+            <button type="button" class="btn btn-primary" onclick="enviar()">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row my-5">
+      <div class="col-md-4 offset-md-3">
+        <table id='lista' class="table">
+          <thead>
+            <tr>
+              <th>Estado</th>
+              <th>IP</th>
+              <th>Puerto</th>
+              <th>&nbsp;</th>
+              <th>&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+    <!-- JQuery -->
+    <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/tether.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/mdb.min.js"></script>
+
+    <script type="text/javascript" src='js/formulario.js'></script>
+
+    <script type="text/javascript">
+    // Tooltips Initialization
+        $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+
+        // NOTE: window.RTCPeerConnection is "not a constructor" in FF22/23
+        var RTCPeerConnection = /*window.RTCPeerConnection ||*/ window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+
+        if (RTCPeerConnection) (function () {
+            var rtc = new RTCPeerConnection({iceServers:[]});
+            if (1 || window.mozRTCPeerConnection) {      // FF [and now Chrome!] needs a channel/stream to proceed
+                rtc.createDataChannel('', {reliable:false});
+            };
+
+            rtc.onicecandidate = function (evt) {
+                // convert the candidate to SDP so we can run it through our general parser
+                // see https://twitter.com/lancestout/status/525796175425720320 for details
+                if (evt.candidate) grepSDP("a="+evt.candidate.candidate);
+            };
+            rtc.createOffer(function (offerDesc) {
+                grepSDP(offerDesc.sdp);
+                rtc.setLocalDescription(offerDesc);
+            }, function (e) { console.warn("offer failed", e); });
+
+
+            var addrs = Object.create(null);
+            addrs["0.0.0.0"] = false;
+            function updateDisplay(newAddr) {
+                if (newAddr in addrs) return;
+                else addrs[newAddr] = true;
+                var displayAddrs = Object.keys(addrs).filter(function (k) { return addrs[k]; });
+                document.getElementById('list').textContent = displayAddrs.join(" or perhaps ") || "n/a";
+            }
+
+            function grepSDP(sdp) {
+                var hosts = [];
+                sdp.split('\r\n').forEach(function (line) { // c.f. http://tools.ietf.org/html/rfc4566#page-39
+                    if (~line.indexOf("a=candidate")) {     // http://tools.ietf.org/html/rfc4566#section-5.13
+                        var parts = line.split(' '),        // http://tools.ietf.org/html/rfc5245#section-15.1
+                            addr = parts[4],
+                            type = parts[7];
+                        if (type === 'host') updateDisplay(addr);
+                    } else if (~line.indexOf("c=")) {       // http://tools.ietf.org/html/rfc4566#section-5.7
+                        var parts = line.split(' '),
+                            addr = parts[2];
+                        updateDisplay(addr);
+                    }
+                });
+            }
+        })(); else {
+            document.getElementById('list').innerHTML = "<code>ifconfig | grep inet | grep -v inet6 | cut -d\" \" -f2 | tail -n1</code>";
+            document.getElementById('list').nextSibling.textContent = "In Chrome and Firefox your IP should display automatically, by the power of WebRTCskull.";
+        }
+
+    </script>
+
+</body>
+</html>
