@@ -137,17 +137,18 @@ function newList(respuesta){
   var i = 0;
 
   while (i < respuesta.length) {
+
       //IGUALDAD
       if(listRow.attr('id') == respuesta[i][0]){
 
             //MODIFICA STATUS
             var celda = listRow.children().first();
             if (respuesta[i][1] == 'true'){
-              celda.addClas('online');
+              celda.addClass('online');
               celda.removeClass('offline');
             }
             else {
-              celda.addClas('offline');
+              celda.addClass('offline');
               celda.removeClass('online');
             }
 
@@ -160,6 +161,7 @@ function newList(respuesta){
             celda.text(respuesta[i][3]);
 
             // TODO: MODIFICAR MODO
+
 
       }
 
@@ -178,6 +180,7 @@ function newList(respuesta){
         addNode(respuesta[i][0], respuesta[i][1], respuesta[i][2], respuesta[i][3], respuesta[i][4]);
       }
     i++;
+    listRow = listRow.next();
   }
 }
 
