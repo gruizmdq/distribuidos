@@ -54,15 +54,24 @@ function post(request, response) {
 
         request.on('end', function () {
             var post = JSON.parse(body);
+            var j = 0;
+            //BUSCA SI EXISTE UN NODO CON ESA IP
+            while (nodos != 'undefined' && j < nodos.length && nodos[j][2] != post.ip) {
+              j++;
+            }
 
-            //HAY QUE VERIFICAR QUE NO EXISTA IP Y PUERTO
+            if (j >= nodos.length)
+              pingIp(post.ip, function(respuesta){
+                response.writeHead(200);
+                nodos.push([i, respuesta, post.ip, post.puerto, post.modo, new Date()]);
+                console.log(nodos);
+                response.end(respuesta + " " + i++);
+              });
 
-            pingIp(post.ip, function(respuesta){
+            else {
               response.writeHead(200);
-              nodos.push([i, respuesta, post.ip, post.puerto, post.modo, new Date()]);
-              console.log(nodos);
-              response.end(respuesta + " " + i++);
-            });
+              response.end('error');
+            }
         });
 
 }

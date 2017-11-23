@@ -20,10 +20,20 @@ function enviar() {
   if(ip.match(ipformat)){
 
     nuevaconsulta('POST', null, ip, parseInt(port,10), modo, function (respuesta) {
-      var data;
-      var estado = respuesta.split(" ")[0];
-      var id = respuesta.split(" ")[1];
-      addNode(id, estado, ip, port, modo);
+      //SI HAY IP REPETIDA, NO LA PONE!.
+
+      if (respuesta == 'error'){
+        $('.error').show(400);
+          setTimeout(function(){
+            $('.error').hide(400);
+          }, 5000);
+      }
+      else{
+        var data;
+        var estado = respuesta.split(" ")[0];
+        var id = respuesta.split(" ")[1];
+        addNode(id, estado, ip, port, modo);
+      }
     });
 
   }
@@ -117,6 +127,7 @@ function getNodos(){
   request.send();
 }
 
+/* FUNCIONES QUE SE LLAMAN CUANDO LA PAGINA SE CARGA COMPLETAMENTE */
 $(document).ready(function() {
   // Cambia de input cuando completa 3 numeros y agrega separador
   $(".ip-input").keyup(function () {
@@ -127,6 +138,8 @@ $(document).ready(function() {
       }
     }
   });
+
+
   setInterval(getNodos(), 1000);
 })
 
@@ -190,14 +203,15 @@ function addNode(index, estado, ip, port, modo){
   //va a cambiar la clase de la primera celda segun respuesta
   //0: offline, 1: online
   if (estado === 'true')
-    var data = '<tr id="'+ index + '" class="animated fadeInLeft"><td class="state online" scope="row">‎●</td>';
+    var data = '<tr id="'+ index + '" class="animated fadeInLeft online"><td class="state" scope="row">‎●</td>';
   else
-    var data = '<tr id="'+ index + '" class="animated fadeInLeft"><td class="state offline" scope="row">‎●</td>';
+    var data = '<tr id="'+ index + '" class="animated fadeInLeft offline"><td class="state" scope="row">‎●</td>';
 
   data += '<td class="ip"><input placeholder="'+ip+'" value ="'+ip+'" /></td>';
   data += '<td class="puerto">'+port+'</td>';
   data += '<td><span class="refresh hoverable" data-toggle="tooltip" data-placement="bottom" title="Refresh">Recargar</span></td>';
-  data += '<td><span class="remove hoverable" data-toggle="tooltip" data-placement="bottom" title="Eliminar">Eliminar</span></td></tr>';
+  data += '<td><span class="remove hoverable" data-toggle="tooltip" data-placement="bottom" title="Eliminar">Eliminar</span></td>';
+  data += '<td><input class="check" type="checkbox" /></td></tr>';
 
   $('#lista').append(data);
 

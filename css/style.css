@@ -1,7 +1,5 @@
 
-tbody tr:hover{
-  background: #eee
-}
+
 .ip-input, .port-input{
   max-width: 50px
 }
@@ -15,15 +13,23 @@ tbody tr:hover{
   font-weight: bold;
   font-size: 1.5em
 }
-.online{
+.online .state{
   color: green;
   animation:verde .6s;
   -moz-animation:verde .6s infinite; /* Firefox */
   -webkit-animation:verde .6s infinite; /* Safari and Chrome */
 }
-
-.offline{
+.online{
+  background: rgba(0,200,81,0.3);
+}
+.online:hover{
+  background: rgba(0,200,81,0.5)
+}
+.offline .state{
   color: red;
+}
+.offline:hover{
+  background: rgba(255,68,68,0.3);
 }
 
 .remove, .refresh{
@@ -42,6 +48,9 @@ tbody tr:hover{
   background: #00C851
 }
 
+.error{
+  color: red;
+}
     @-moz-keyframes verde /* Firefox */
   {
   0%   {color:green;}
