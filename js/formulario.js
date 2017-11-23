@@ -101,12 +101,12 @@ $(document).on('click', '.refresh', function() {
 
   nuevaconsulta('PUT', parseInt(index), ip, parseInt(puerto.text(),10), modo, function(resp){
     if (resp.split(" ")[0] == 'true') {
-      state.removeClass('offline');
-      state.addClass('online');
+      row.removeClass('offline');
+      row.addClass('online');
     }
     else{
-      state.removeClass('online');
-      state.addClass('offline');
+      row.removeClass('online');
+      row.addClass('offline');
     }
     row.addClass('fadeInLeft')
   });
