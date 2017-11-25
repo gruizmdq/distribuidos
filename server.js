@@ -200,15 +200,19 @@ function get(request, response){
   //CHEQUEA LOS NODOS QUE ESTAN CON MODO = TRUE
   function checkNode(){
     for (var i = 0; i < nodos.length; i++)
-      if(nodos[i][4] == 'true'){
-        ip = nodos[i][2];
-        pingIp(ip, function(respuesta){
-          //actualizo status
-          nodos[i][1] = respuesta;
-          //actualiza fecha
-          nodos[i][5] = new Date();
-        })
-      }
+      (function(i) {
+
+          if(nodos[i][4] == 'true'){
+            ip = nodos[i][2];
+            pingIp(ip, function(respuesta){
+              //actualizo status
+              nodos[i][1] = respuesta;
+              //actualiza fecha
+              nodos[i][5] = new Date();
+              console.log(nodos);
+            })
+          }
+      })(i);
   }
 //CADA 20 segundos chequea los nodos. Menos tiempo seria sobrecargar demasiado al servidor
 setInterval(checkNode, 20000);

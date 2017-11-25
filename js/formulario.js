@@ -174,7 +174,18 @@ function newList(respuesta){
             celda = celda.next();
             celda.text(respuesta[i][3]);
 
-            // TODO: MODIFICAR MODO
+            //MODIFICA MODO
+            var id = '#checkbox'+respuesta[i][0];
+            celda = $(id);
+            modo = respuesta[i][4];
+            
+            // EL ATRIBUTO NO ACEPTA 'FALSE' COMO STRING.
+            if (modo == 'false')
+              modo = false;
+            else
+              modo = true;
+            celda.prop('checked', modo)
+
 
 
       }
@@ -216,6 +227,13 @@ function addNode(index, estado, ip, port, modo){
 
   $('#lista').append(data);
 
+  if (modo == 'true'){
+    //MODIFICA MODO
+    var id = '#checkbox'+index;
+    celda = $(id);
+    celda.attr('checked', modo)
+  }
+
 }
 
 
@@ -233,5 +251,6 @@ $(document).ready(function() {
 
   //SOLICITA NODOS CADA 21 SEGUNDOS PORQUE EL SEGUNDOS
   // HACE PINGS DE LA LISTA DE NODOS CADA 20 SEGUNDOS
+  getNodos();
   setInterval(getNodos, 21000);
 })
