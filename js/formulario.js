@@ -110,7 +110,24 @@ $(document).on('click', '.refresh', function() {
     }
     row.addClass('fadeInLeft')
   });
+});
 
+// *** PUT 2 *** CAMBIO DE MODO CUANDO APRETO EN EL CHECKBOX
+$(document).on('click', '.checkbox', function() {
+
+  id = $(this).closest("tr").attr("id");
+  val = $(this).is(":checked");
+
+  $('.lwrapper').addClass('active');
+
+  var request = new XMLHttpRequest();
+  request.open('PUT', "http://"+window.location.host, true);
+
+  request.onload = function () {
+    $('.lwrapper').removeClass('active');
+  };
+
+  request.send('modo '+id+ " "+val);
 
 });
 
@@ -126,22 +143,6 @@ function getNodos(){
 
   request.send();
 }
-
-/* FUNCIONES QUE SE LLAMAN CUANDO LA PAGINA SE CARGA COMPLETAMENTE */
-$(document).ready(function() {
-  // Cambia de input cuando completa 3 numeros y agrega separador
-  $(".ip-input").keyup(function () {
-    if (this.value.length == this.maxLength) {
-      if($(this).next().is('.ip-input')){
-        $(this).next('.ip-input').focus();
-        $(this).after(".");
-      }
-    }
-  });
-
-
-  setInterval(getNodos(), 1000);
-})
 
 function newList(respuesta){
 
@@ -211,8 +212,26 @@ function addNode(index, estado, ip, port, modo){
   data += '<td class="puerto">'+port+'</td>';
   data += '<td><span class="refresh hoverable" data-toggle="tooltip" data-placement="bottom" title="Refresh">Recargar</span></td>';
   data += '<td><span class="remove hoverable" data-toggle="tooltip" data-placement="bottom" title="Eliminar">Eliminar</span></td>';
-  data += '<td><input class="check" type="checkbox" /></td></tr>';
+  data += '<td><div class="form-group"><input type="checkbox" class="checkbox" id="checkbox'+index+'"><label for="checkbox'+index+'">Monitorear</label></div></td></tr>';
 
   $('#lista').append(data);
 
 }
+
+
+/* FUNCIONES QUE SE LLAMAN CUANDO LA PAGINA SE CARGA COMPLETAMENTE */
+$(document).ready(function() {
+  // Cambia de input cuando completa 3 numeros y agrega separador
+  $(".ip-input").keyup(function () {
+    if (this.value.length == this.maxLength) {
+      if($(this).next().is('.ip-input')){
+        $(this).next('.ip-input').focus();
+        $(this).after(".");
+      }
+    }
+  });
+
+  //SOLICITA NODOS CADA 21 SEGUNDOS PORQUE EL SEGUNDOS
+  // HACE PINGS DE LA LISTA DE NODOS CADA 20 SEGUNDOS
+  setInterval(getNodos, 21000);
+})
